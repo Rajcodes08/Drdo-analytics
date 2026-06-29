@@ -119,22 +119,3 @@ def age_designation_chart(df):
     )
 
     return fig
-
-
-def gender_chart(df):
-
-    fig = px.pie(
-        df,
-        names="Gender",
-        values="Count"
-    )
-
-    fig.update_traces(hole=0.55)
-
-    fig.update_layout(
-        template="plotly_white",
-        height=360,
-        title=""
-    )
-
-    return fig

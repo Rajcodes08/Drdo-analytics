@@ -11,8 +11,7 @@ from queries import (
     get_designation_employee_count,
     get_designation_average_age,
     get_cluster_average_age,
-    get_lab_average_age,
-    get_gender_distribution
+    get_lab_average_age
 )
 from charts import (
     employee_cluster_chart,
@@ -20,8 +19,7 @@ from charts import (
     employee_designation_chart,
     age_cluster_chart,
     age_lab_chart,
-    age_designation_chart,
-    gender_chart
+    age_designation_chart
 )
 # -----------------------------------------------------
 # Page Config
@@ -97,15 +95,6 @@ lab_fig = employee_lab_chart(lab_df)
 
 designation_df = get_designation_average_age(conn)
 designation_age_fig = age_designation_chart(designation_df)
-
-
-# -----------------------------------------------------
-# Gender Distribution
-# -----------------------------------------------------
-
-
-gender_df = get_gender_distribution(conn)
-gender_fig = gender_chart(gender_df)
 
 
 

@@ -80,12 +80,3 @@ def get_lab_average_age(conn):
     ORDER BY AverageAge DESC;
     """).fetchdf()
 
-def get_gender_distribution(conn):
-
-    return conn.execute("""
-    SELECT
-        Gender,
-        COUNT(*) AS Count
-    FROM Employees
-    GROUP BY Gender;
-    """).fetchdf()
