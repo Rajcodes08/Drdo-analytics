@@ -12,7 +12,7 @@ conn = duckdb.connect(DATABASE_FILE)
 
 excel_file = pd.ExcelFile(EXCEL_FILE)
 
-print("Connected to DuckDB successfully!")
+#print("Connected to DuckDB successfully!")
 
 for sheet in excel_file.sheet_names:
     df = pd.read_excel(EXCEL_FILE, sheet_name=sheet)
