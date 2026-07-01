@@ -11,7 +11,8 @@ from queries import (
     get_designation_employee_count,
     get_designation_average_age,
     get_cluster_average_age,
-    get_lab_average_age
+    get_lab_average_age,
+    get_lab_employee_count_by_cluster
 )
 from charts import (
     employee_cluster_chart,
@@ -21,6 +22,7 @@ from charts import (
     age_lab_chart,
     age_designation_chart
 )
+from streamlit_plotly_events import plotly_events
 # -----------------------------------------------------
 # Page Config
 # -----------------------------------------------------
@@ -97,6 +99,8 @@ designation_df = get_designation_average_age(conn)
 designation_age_fig = age_designation_chart(designation_df)
 
 
+designation_count_df = get_designation_employee_count(conn)
+designation_count_fig = employee_designation_chart(designation_count_df)
 
 
 cluster_age_df = get_cluster_average_age(conn)
@@ -120,16 +124,21 @@ if analysis == "Employee Count":
 
     if analyze_by == "Cluster":
 
-        st.plotly_chart(cluster_fig, use_container_width=True)
+        selected_points = plotly_events(
+            cluster_fig,
+            click_event=True,
+            hover_event=False,
+            select_event=False,
+            override_height=360,
+        )
+
+        st.write(selected_points)
 
     elif analyze_by == "Lab":
 
         st.plotly_chart(lab_fig, use_container_width=True)
 
     elif analyze_by == "Designation":
-
-        designation_count_df = get_designation_employee_count(conn)
-        designation_count_fig = employee_designation_chart(designation_count_df)
 
         st.plotly_chart(
             designation_count_fig,
@@ -143,6 +152,7 @@ elif analysis == "Average Age":
             cluster_age_fig,
             use_container_width=True
         )
+
 
     elif analyze_by == "Lab":
 

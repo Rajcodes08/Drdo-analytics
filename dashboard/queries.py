@@ -90,3 +90,20 @@ def get_lab_average_age(conn):
         l.LabName
     ORDER BY l.LabID ASC;
     """).fetchdf()
+def get_lab_employee_count_by_cluster(conn, cluster_name):
+
+    return conn.execute("""
+    SELECT
+        l.LabName,
+        COUNT(*) AS EmployeeCount
+    FROM Employees e
+    JOIN Labs l
+        ON e.LabID = l.LabID
+    JOIN Clusters c
+        ON l.ClusterID = c.ClusterID
+    WHERE c.ClusterName = ?
+    GROUP BY
+        l.LabID,
+        l.LabName
+    ORDER BY l.LabID;
+    """, [cluster_name]).fetchdf()
