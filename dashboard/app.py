@@ -11,7 +11,10 @@ from queries import (
     get_designation_employee_count,
     get_designation_average_age,
     get_cluster_average_age,
-    get_lab_average_age
+    get_lab_average_age,
+    get_all_clusters,
+    get_lab_employee_count_by_cluster,
+    get_lab_average_age_by_cluster
 )
 from charts import (
     employee_cluster_chart,
@@ -40,12 +43,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATABASE_FILE = PROJECT_ROOT / "data" / "processed" / "drdo.duckdb"
 
 conn = duckdb.connect(DATABASE_FILE)
+cluster_list = get_all_clusters(conn)
 
 # -----------------------------------------------------
 # Sidebar
 # -----------------------------------------------------
 
-analysis, analyze_by = show_sidebar()
+analysis, analyze_by, selected_cluster = show_sidebar(cluster_list)
 
 
 
@@ -114,7 +118,10 @@ st.divider()
 
 st.header(f"📊 {analysis} Analysis")
 
-st.caption(f"Grouped by {analyze_by}")
+if analyze_by == "Lab (Within Cluster)":
+    st.caption(f"Cluster: {selected_cluster}")
+else:
+    st.caption(f"Grouped by {analyze_by}")
 
 if analysis == "Employee Count":
 
@@ -122,9 +129,21 @@ if analysis == "Employee Count":
 
         st.plotly_chart(cluster_fig, use_container_width=True)
 
-    elif analyze_by == "Lab":
+    elif analyze_by == "Lab (Within Cluster)":
 
-        st.plotly_chart(lab_fig, use_container_width=True)
+        filtered_lab_df = get_lab_employee_count_by_cluster(
+            conn,
+            selected_cluster
+        )
+
+        filtered_lab_fig = employee_lab_chart(filtered_lab_df)
+
+        st.subheader(f"Labs in {selected_cluster}")
+
+        st.plotly_chart(
+            filtered_lab_fig,
+            use_container_width=True
+        )
 
     elif analyze_by == "Designation":
 
@@ -144,13 +163,21 @@ elif analysis == "Average Age":
             use_container_width=True
         )
 
-    elif analyze_by == "Lab":
+    elif analyze_by == "Lab (Within Cluster)":
 
-        st.plotly_chart(
-            lab_age_fig,
-            use_container_width=True
+        filtered_age_df = get_lab_average_age_by_cluster(
+            conn,
+            selected_cluster
         )
 
+        filtered_age_fig = age_lab_chart(filtered_age_df)
+
+        st.subheader(f"Average Age of Labs in {selected_cluster}")
+
+        st.plotly_chart(
+            filtered_age_fig,
+            use_container_width=True
+        )
     elif analyze_by == "Designation":
 
         st.plotly_chart(

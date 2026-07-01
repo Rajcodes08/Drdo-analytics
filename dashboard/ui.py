@@ -1,8 +1,7 @@
 import streamlit as st
 
 
-def show_sidebar():
-
+def show_sidebar(cluster_list):
     st.sidebar.title("🛡️ DRDO Analytics")
 
     st.sidebar.markdown("---")
@@ -15,15 +14,26 @@ def show_sidebar():
         ]
     )
 
+    analyze_options = [
+        "Cluster",
+        "Lab (Within Cluster)",
+        "Designation"
+    ]
+
     analyze_by = st.sidebar.selectbox(
         "Analyze By",
-        [
-            "Cluster",
-            "Lab",
-            "Designation"
-        ]
+        analyze_options
     )
 
+    selected_cluster = None
+
+    if analyze_by == "Lab (Within Cluster)":
+
+        # We'll populate this from the database in the next step
+        selected_cluster = st.sidebar.selectbox(
+            "Select Cluster",
+            cluster_list["ClusterName"].tolist()
+        )
     st.sidebar.markdown("---")
 
     st.sidebar.info(
@@ -40,7 +50,7 @@ def show_sidebar():
         """
     )
 
-    return analysis, analyze_by
+    return analysis, analyze_by, selected_cluster
 
 def show_kpis(conn):
 
