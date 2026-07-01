@@ -48,7 +48,8 @@ conn = duckdb.connect(DATABASE_FILE)
 # -----------------------------------------------------
 
 analysis, analyze_by = show_sidebar()
-
+if "selected_cluster" not in st.session_state:
+    st.session_state.selected_cluster = None
 
 
 # -----------------------------------------------------
@@ -124,16 +125,41 @@ if analysis == "Employee Count":
 
     if analyze_by == "Cluster":
 
-        selected_points = plotly_events(
-            cluster_fig,
-            click_event=True,
-            hover_event=False,
-            select_event=False,
-            override_height=360,
-        )
+        if st.session_state.selected_cluster is None:
 
-        st.write(selected_points)
+            selected_points = plotly_events(
+                cluster_fig,
+                click_event=True,
+                hover_event=False,
+                select_event=False,
+                override_height=360
+            )
 
+            if selected_points:
+                st.session_state.selected_cluster = selected_points[0]["x"]
+                st.rerun()
+
+        else:
+
+            cluster_name = st.session_state.selected_cluster
+
+            st.subheader(f"📍 {cluster_name}")
+
+            lab_df = get_lab_employee_count_by_cluster(
+                conn,
+                cluster_name
+            )
+
+            lab_fig = employee_lab_chart(lab_df)
+
+            st.plotly_chart(
+                lab_fig,
+                use_container_width=True
+            )
+
+            if st.button("⬅ Back to Clusters"):
+                st.session_state.selected_cluster = None
+                st.rerun()
     elif analyze_by == "Lab":
 
         st.plotly_chart(lab_fig, use_container_width=True)
